@@ -1,0 +1,166 @@
+Options +FollowSymlinks -Indexes
+RewriteEngine On
+#------------------#
+#  HTTP TO HTTPS   #
+#------------------#
+RewriteCond %{SERVER_PORT} 80
+RewriteRule ^(.*)$ https://www.campandjoy.fr/$1 [R,L]
+#------------------#
+#/!\ NECESSAIRE /!\#
+#------------------#
+RewriteRule demo/(.+)/images/(.+) /demo/images/$2 [L]
+RewriteRule demo/(.+)/js/(.+) /demo/js/$2 [L]
+RewriteRule demo/(.+)/css/(.+) /demo/css/$2 [L]
+RewriteRule demo/(.+)/font\-awesome-4\.7\.0/(.+) /demo/font-awesome-4.7.0/$2 [L]
+#------------------#
+#    ERREUR 404    #
+#------------------#
+ErrorDocument 404 /demo/index.php
+#------------------#
+#   HOME - INDEX   #
+#------------------#
+RewriteRule demo/(en|fr)/index\.php$ /demo/index.php?lang=$1 [L]
+RewriteRule demo/(en/|fr/)?$ /demo/index.php?lang=$1 [L]
+RewriteRule demo/(en/|fr/)?(home)?/?$ /demo/index.php?lang=$1 [L]
+#------------------#
+#     ACTIVITES    #
+#------------------#
+RewriteRule demo/(en/|fr/)?planning/([0-9]{2})/([0-9]{2})/([0-9]{2})/([0-9]{1})/(.+)$ /demo/index.php?page=planning&date=$4-$3-$2&onlyCamping=$5&tags=$6&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?planning/([0-9]{2})/([0-9]{2})/([0-9]{2})/([0-9]{1})/?$ /demo/index.php?page=planning&date=$4-$3-$2&onlyCamping=$5&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?planning/([0-9]{2})/([0-9]{2})/([0-9]{2})/(.+)$ /demo/index.php?page=planning&date=$4-$3-$2&tags=$5&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?planning/([0-9]{2})/([0-9]{2})/([0-9]{2})/?$ /demo/index.php?page=planning&date=$4-$3-$2&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?planning/([0-9]{1})/(.+)$ /demo/index.php?page=planning&onlyCamping=$2&tags=$3&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?planning/([0-9]{1})/?$ /demo/index.php?page=planning&onlyCamping=$2&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?planning/(.+)$ /demo/index.php?page=planning&tags=$2&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?planning(.*)$ /demo/index.php?page=planning&lang=$1 [L]
+#------------------#
+#    RESTAURANT    #
+# 	-- SERVICE --  #
+#------------------#
+RewriteRule demo/(en/|fr/)?service/restaurant/([0-9]{2})/([0-9]{2})/([0-9]{2})/([0-9]{2})/([0-9]{2})/?$ /demo/index.php?page=restaurant&date=$4-$3-$2&h=$5&m=$6&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?service/restaurant/([0-9]{2})/([0-9]{2})/([0-9]{2})/([0-9]{2})/([0-9]{2})/([0-9]+)/?$ /demo/index.php?page=restaurant&date=$4-$3-$2&h=$5&m=$6&pers=$7&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?service/restaurant/([0-9]{2})/?$ /demo/index.php?page=restaurant&pers=$2&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?service/restaurant(.*)$ /demo/index.php?page=restaurant&lang=$1 [L]
+#------------------#
+#    PARTENAIRE    #
+# 	-- SERVICE --  #
+#------------------#
+RewriteRule demo/(en/|fr/)?service/partenaire/([0-9]+)/?$ /demo/index.php?page=partenaire&id=$2&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?service/partenaire(.*)$ /demo/index.php?page=partenaire&lang=$1 [L]
+#------------------#
+#  LIEUX COMMUNS   # 
+#  -- SERVICE --   #
+#------------------#
+RewriteRule demo/(en/|fr/)?service/nosEspaces(.*)$ /demo/index.php?page=lieuxCommuns&lang=$1 [L]
+#------------------#
+#  ÉTAT DES LIEUX  #
+# 	-- SERVICE --  #
+#------------------#
+RewriteRule demo/(en/|fr/)?service/etatDesLieux(.*)$ /demo/index.php?page=edl&lang=$1 [L]
+#------------------#
+#     SERVICES     #
+#------------------#
+RewriteRule demo/(en/|fr/)?service(.*)$ /demo/index.php?page=service&lang=$1 [L] 
+#------------------#
+#    LE CAMPING    #
+#------------------#
+RewriteRule demo/(en/|fr/)?leCamping/notreEquipe(.*)$ /demo/index.php?page=notreEquipe&lang=$1 [L] 
+RewriteRule demo/(en/|fr/)?leCamping(.*)$ /demo/index.php?page=leCamping&lang=$1 [L] 
+#------------------#
+#   PROBLEMES      #
+#------------------#
+RewriteRule demo/(en/|fr/)?problemeTechnique/modifier/([0-9]+)/?$ /demo/index.php?page=modifierPbTech&id=$2&lang=$1 [L] 
+RewriteRule demo/(en/|fr/)?problemeTechnique/supprimer/([0-9]+)/?$ /demo/index.php?page=supprimerPbTech&id=$2&lang=$1 [L] 
+RewriteRule demo/(en/|fr/)?problemeTechnique/vue/([0-9]+)/?$ /demo/index.php?page=vuePbTech&id=$2&lang=$1 [L] 
+RewriteRule demo/(en/|fr/)?problemeTechnique/mesProblemes(.*)$ /demo/index.php?page=mesProblemes&lang=$1 [L] 
+RewriteRule demo/(en/|fr/)?problemeTechnique/signaler(.*)$ /demo/index.php?page=signalerProbleme&lang=$1 [L] 
+RewriteRule demo/(en/|fr/)?FAQ(.*)$ /demo/index.php?page=FAQ&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?probleme(.*)$ /demo/index.php?page=probleme&lang=$1 [L] 
+ 
+#------------------#
+#      COMPTE      #
+#------------------#
+RewriteRule demo/(en/|fr/)?compte/ajout/?$ /demo/index.php?page=compte_ajout&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?compte/modifier/([0-9]+)/?$ /demo/index.php?page=compte_modifier&id=$2&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?compte(.*)$ /demo/index.php?page=compte&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?profil/([0-9]+)/?$ /demo/index.php?page=profil&id=$2&lang=$1 [L]
+#------------------#
+#      EQUIPE      #
+#------------------#
+RewriteRule demo/(en/|fr/)?equipe/mesEquipes(.*)$ /demo/index.php?page=mesEquipes&lang=$1 [L]
+#------------------#
+#      BOARD      #
+#------------------#
+RewriteRule demo/(en/|fr/)?board(.*)$ /demo/index.php?page=board&lang=$1 [L]
+#------------------#
+#     PAIEMENT     #
+#------------------#
+RewriteRule demo/(en/|fr/)?paiement/done(.*) /demo/index.php?page=paiement&action=done&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?paiement/cancel(.*) /demo/index.php?page=paiement&action=cancel&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?paiement/refuse(.*) /demo/index.php?page=paiement&action=refuse&lang=$1 [L]
+#------------------#
+#    ACTIVITES     #
+#  ADMINISTRATION  #
+#------------------#
+RewriteRule demo/(en/|fr/)?activites/ajout(.*)$ /demo/index.php?page=administration&type=ajoutActivite&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?activites/modifier/([0-9]+)/?$ /demo/index.php?page=administration&type=modifierActivite&id=$2&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?activites(.*)$ /demo/index.php?page=administration&type=activites&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?administration/activites/ajout(.*)$ /demo/index.php?page=administration&type=ajoutActivite&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?administration/activites/modifier/([0-9]+)/?$ /demo/index.php?page=administration&type=modifierActivite&id=$2&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?administration/activites/recherche/?$ /demo/index.php?page=administration&type=rechercheActivite&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?administration/activites(.*)$ /demo/index.php?page=administration&type=activites&lang=$1 [L]
+#------------------#
+#    RESERVATION   #
+#  ADMINISTRATION  #
+#------------------#
+RewriteRule demo/(en/|fr/)?administration/reservation/([a-zA-Z_]+)/([0-9]+)/([0-9]{2})/([0-9]{2})/([0-9]{2})/?$ /demo/index.php?page=administration&type=reservation&categorie=$2&id=$3&date=$6-$5-$4&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?administration/reservation/([a-zA-Z_]+)/([0-9]+)/?$ /demo/index.php?page=administration&type=reservation&categorie=$2&id=$3&lang=$1 [L]
+#------------------#
+#  LIEU COMMUN     #
+#  ADMINISTRATION  #
+#------------------#
+RewriteRule demo/(en/|fr/)?administration/lieuCommun/ajout(.*)$ /demo/index.php?page=administration&type=ajoutLieuCommun&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?administration/lieuCommun/modifier/([0-9]+)/?$ /demo/index.php?page=administration&type=modifierLieuCommun&lang=$1&id=$2 [L]
+RewriteRule demo/(en/|fr/)?administration/lieuCommun/recherche/?$ /demo/index.php?page=administration&type=rechercheLieuCommun&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?administration/lieuCommun(.*)$ /demo/index.php?page=administration&type=lieuxCommuns&lang=$1 [L]
+#------------------#
+#  PB TECH         #
+#  ADMINISTRATION  #
+#------------------#
+RewriteRule demo/(en/|fr/)?administration/problemesTechniques(.*)$ /demo/index.php?page=administration&type=problemesTechniques&lang=$1 [L]
+#------------------#
+#  RESTAURANT      #
+#  ADMINISTRATION  #
+#------------------#
+RewriteRule demo/(en/|fr/)?administration/restaurant/ajout(.*)$ /demo/index.php?page=administration&type=restaurantAjout&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?administration/restaurant/modifier/([0-9]+)/?$ /demo/index.php?page=administration&type=restaurantModifier&id=$2&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?administration/restaurant/recherche/?$ /demo/index.php?page=administration&type=rechercheRestaurant&lang=$1 [L]
+#------------------#
+#     SERVICES     #
+#  ADMINISTRATION  #
+#------------------#
+RewriteRule demo/(en/|fr/)?administration/service(.*)$ /demo/index.php?page=administration&type=service&lang=$1 [L]
+#------------------#
+#     COMPTES      #
+#  ADMINISTRATION  #
+#------------------#
+RewriteRule demo/(en/|fr/)?administration/compte/modifier/([0-9]+)/?$ /demo/index.php?page=administration&type=compteModifier&id=$2&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?administration/compte/voir/([0-9]+)/?$ /demo/index.php?page=administration&type=compteVoir&id=$2&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?administration/compte/ajout(.*)$ /demo/index.php?page=administration&type=compteAdd&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?administration/compte(.*)$ /demo/index.php?page=administration&type=compte&lang=$1 [L]
+#------------------#
+#       FAQ        #
+#  ADMINISTRATION  #
+#------------------#
+RewriteRule demo/(en/|fr/)?administration/FAQ/gestion(.*)$ /demo/index.php?page=administration&type=gestion&lang=$1 [L]
+#------------------#
+#     COMPTES      #
+#  ADMINISTRATION  #
+#------------------#
+RewriteRule demo/(en/|fr/)?administration/notif/push(.*)$ /demo/index.php?page=administration&type=pushNotif&lang=$1 [L]
+#------------------#
+#    PARTENAIRE    #
+#  ADMINISTRATION  #
+#------------------#
+RewriteRule demo/(en/|fr/)?administration/partenaire/ajout(.*)$ /demo/index.php?page=administration&type=ajoutPartenaire&lang=$1 [L]
+RewriteRule demo/(en/|fr/)?administration/partenaire/modifier/([0-9]+)/?$  /demo/index.php?page=administration&type=modifierPartenaire&id=$2&lang=$1 [L]

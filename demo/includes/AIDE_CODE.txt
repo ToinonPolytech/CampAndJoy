@@ -1,0 +1,202 @@
+Comment mettre en place l'upload des images (Exemple dans ajoutProblemeTechniqueForm.php) : 
+Rajouter un label : <label for="imageAjax" onclick="addImage();">Ajouter une photo</label>
+Modifier le enctype du formulaire comme ceci : enctype="multipart/form-data"
+Modifier les arguments de loadTo (le button), 2ème argument comme ceci : (window.FormData) ? new FormData($('#ID_DU_FORM')[0]) : $('#ID_DU_FORM').serialize()
+
+Le formulaire est mis en place.
+Coté php (Exemple dans problemeTechnique.controllerForm.php) : 
+Rajouter : require_once(i("images.class.php"));
+Rajouter ceci avant tout ce qui est Controller :
+$photos="";
+if (isset($_FILES))
+{
+	$dir="pbTechniques";
+	$maxsize=2048000;
+	$extensions_valides = array( 'jpg' , 'jpeg' , 'gif' , 'png' , 'bmp' );
+	$imagesUpload=new Image_upload($_FILES, $maxsize, $extensions_valides, $dir);
+	$photos=$imagesUpload->getUrl();
+}
+		
+if (!isset($imagesUpload) || !$imagesUpload->getError())
+{
+	/** LE RESTE DU CODE **/
+}
+else
+{
+	echo "ERREUR : Un problème est survenu lors de l'envoi du formulaire.";
+}
+
+Le coté php est géré
+->getUrl(), renvoie l'ensemble des chemins vers le fichier sous la forme de chemin1,chemin2,
+$dir, définie le répertoire de sauvegarde
+
+----------------------- JAVASCRIPT AJAX -----------------------------
+
+Fonction loadTo
+Arguments : urlCalled, dataUsed, location, type, isImage, callback (3 premier sont obligatoire)
+Retourne :
+Utilité : Permet de charger dynamiquement une page coté serveur pour l'afficher au client.
+Exemple : loadTo('<?php echo str_replace($_SERVER["DOCUMENT_ROOT"], "", i("users.php")); ?>', {}, '#ma_div1', 'replace'); // Affiche le résutlat de la page users.php sans données POST dans la div id="ma_div1")
+urlCalled : Utilise le php : <?php echo str_replace($_SERVER["DOCUMENT_ROOT"], "", i("nom_fichier.php")); ?>
+dataUsed : 
+	Si isImage est true : 
+		alors mettre le selector cad : "#nom_form" (<form id="idform" => donc "#idform") 
+	sinon mettre un objet JSON {var1 : value, var2 : value} ou utiliser $("#nom_form").serialize()
+location : selector du lieu où l'information sera ecrite. (<div id="premiere"> <span id="deuxieme"> </span> <span class="troisieme"></span></div><div id="premire_bis"></div>, si on veut écrire dans premiere on fera "#premiere", si on veut écrire dans le span "troisieme" on fera ".troisieme")
+type : 
+- preprend : ecrira en debut de location
+- replace : remplace le contenu de la location par le nouveau
+- append : ecrit a la fin de la location
+- next : ecrit après la location
+- before : ecrit avant la location
+isImage : true pour informer au script quune image sera upload
+false sinon
+callback : une fonction qui sera appelle a la fin du script 
+
+Fonction loadToMain
+Arguments : urlCalled, dataUsed, callback
+Retourne :
+Utilité : Permet de charger dynamiquent une page coté serveur pour l'afficher au client dans le contenu principal de la page
+Fonctionnement : Appelle la fonction LoadTo(urlCalled, {}, "#mainAjax", "replace", false, callback)
+
+Fonction : $.extend
+Arguements : {}, object1, object2
+Retourne : Fusionne plusieurs élements JSON
+Exemple : $.extend({}, object1, object2);
+
+ ------------- DATABASE -----------
+ 
+Fonction getValue
+Arguments : $name_table, $array_where, $colonne (Aucun n'est optionnel)
+Retourne : La colonne de $name_table selon les conditions $array_where
+Exemple : $db->getValue("users", array("clef" => "GHJAUT"), "id"); // affichera 5 (par exemple)
+
+Fonction select
+Arguments : $name_table, $array_where, $array_select (Seul le premier est obligatoire)
+Retourne : void
+Utilité : Prépare un objet de requête accessible via fetch(). Cette requête sera sur $name_table et retournera soit toutes les données quand array_select est pris par défaut, soit les données choisi via $array_select. On peut lui mettre des conditions via $array_where
+Exemple : $db->select("users"); // Prépare un objet retournant tout les users
+$db->select("users", array("clef" => "GHJAUT"), "id"); // Prépare un objet permettant de retourner l'id des entrées users ayant comme clef GHJAUT 
+$db->select("users", array("clef" => "GHJAUT"), array("id", "nom", "prenom")); // Prépare un objet permettant de retourner l'id le nom et le prénom des entrées users ayant comme clef GHJAUT
+
+Fonction selectJoin
+Arguments : $name_table, $array_join, $array_where, $array_select (2 premiers obligatoire)
+Retourne : c.f select
+Utilité : c.f select + permet une jointure grâce à $array_join
+Exemple : $db->select("users", array(" users_info AS ui ON infoId=ui.id ")); // Prépare un objet retournant les informations des users reliés à leurs user_info
+
+Fonction delete
+Arguments : $name_table, $array_where
+Retourne: void
+Utilité : Supprime les entrées selon les conditions $array_where dans $name_table
+Exemple : $db->delete("users", array("id" => 10)); // Supprime le users ayant comme id 10
+
+Fonction update
+Arguments : $name_table, $array_where, $array_update
+Retourne: void
+Utilité : Remplace les valeurs $array_update des entités selon $array_where dans $name_table
+Exemple : $db->update("users", array("id" => 10), array("nom" => nouveauNom, "prenom" => nouveauPrenom")); // Met à jour les valeurs nom et prenom du users ayant comme id 10
+
+
+Fonction create
+Arguments : $name_table, $array_create
+Retourne: void
+Utilité : Insert de nouvelles données dans la table $name_table
+Exemple : $db->create("users", array("clef" => 'FHEAD58', 'nom' => 'GEORGET')); // Rajoute dans users, l'entité ayant comme clef FHEAD58 et comme nom GEORGET
+
+Fonction fetch
+Arguments : 
+Retourne : Un array de données selon l'objet qui a été préalablement créé
+Exemple : $db->select("users"); $data=$db->fetch(); // $data est un array contenant les données de la premiere entité de users
+
+Fonction count
+Arguments: $name_table, $array_where
+Retourne : Le nombre d'occurence dans $name_table respectant les conditions de $array_where
+Exemple : $db->count("users", array("nom" => "GEORGET")); // Retournera le nombre d'users ayant comme nom GEORGET
+
+Fonction lastInsertId
+Arguments : 
+Retourne : Le dernier ID créé grâce à un create()
+Utilité : Permet de récuperer un ID créé via un AUTO_INCREMENT
+Exemple : $db->create("users", array("clef" => 'FHEAD58', 'nom' => 'GEORGET')); $db->lastInsertId(); // Retourne l'id du users préalablement créé
+
+Fonction prepare
+Arguments : $request
+Retourne : 
+Utilité : Permet de préparer une requête
+Exemple : $db->prepare("SELECT * FROM users"); // Prépare la requête
+
+Fonction execute
+Arguments : $array
+Retourne : 
+Utilité : Permet de d'éxecuter une requête préparé avec les conditions $array
+Exemple : $db->prepare("SELECT * FROM users WHERE id=:id"); $db->execute(array("id" => 10)); // Exécuté la requête en mettant l'id à 10
+
+Fonction setOrderCol
+Arguments: $col
+Retourne :
+Utilité : Permet de trier la requête suivante selon une colonne (par défaut ASC)
+Exemple : $db->setOrderCol("points"); $db->setDesc(); $db->select("equipe"); // SQL : SELECT * FROM equipe ORDER BY points DESC
+
+Fonction setDesc / setAsc
+Arguments : 
+Retourne : 
+Utiltié : Permet de stipuler la manière de trier
+Exemple : $db->setAsc(); $db->setDesc(); // Respectivement, en ASC ou en DESC
+/!\ Par défaut lors de $db = new Database(); le tri est mis en ASC
+
+Explications sur les array_where : 
+
+array("id" => 10); // WHERE id=10
+array("id" => array(TYPE, 10)); // WHERE id TYPE 10
+TYPE : =, !=, <=, >=, <, > // Exemple : WHERE id=10, id!=10, <=10 ect...
+array("id" => array(10, 20)); // WHERE id>=10 AND id<=20
+array("id" => array("OR" => array(10, 20))); // WHERE (id=10 OR id=20) 
+array("nom" => array(" LIKE ", "GEOR%")); // WHERE nom LIKE GEOR%
+array("OR" => array("id" => 10, "infoId" => 5), "nom" => "autre"); // WHERE (id=10 OR infoId=5) AND nom='autre'
+
+------------------ Horaires ---------------------
+Elles sont stockés en DB dans un array serialize, 
+$data=$db->fetch();
+$horaires=unserialize($data["horaires"]);
+
+$horaires est un tableau à deux entrées.
+Première entrée correspond au jour. (c.f date("w") php) (0 : DIMANCHE, 1 : LUNDI, ... , 6 : SAMEDI)
+La seconde entrée correspond à un intervalle de 30minutes. (0 : 00h, 1 : 00h30, 2 : 1h00, ..., 46 : 23h00, 47 : 23h30) (x : (x quo 2)h(x%2)*30)
+Prenons $horaires[3][25] : Mercredi 12h30. Si c'est true alors le mercredi 12h30 jusqu'à 13h00 c'est ouvert. Sinon fermé.
+Façons d'utiliser : 
+foreach ($horaires as $day => $horaires_sub)
+{
+	switch ($day)
+	{
+		case 0:
+			echo "Dimanche";
+			break;
+		case 1:
+			echo "Lundi";
+			break;
+		case 2:
+			echo "Mardi";
+			break;
+		case 3:
+			echo "Mercredi";
+			break;
+		case 4:
+			echo "Jeudi";
+			break;
+		case 5:
+			echo "Vendredi";
+			break;
+		case 6:
+			echo "Samedi";
+			break;
+	}
+	foreach ($horaires_sub as $heures => $bool)
+	{
+		if (floor($heures/2)<10) echo "0";
+		echo floor($heures/2)."h";
+		if ($heures%2) echo "30"; else echo "00";
+		if ($bool) echo "Ouvert"; else echo "Fermé"; 
+		echo "<br/>";
+	}
+	echo "<br/>";
